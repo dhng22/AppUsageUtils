@@ -1,19 +1,25 @@
 # AppUsageUtils
 Query and return application usage time by day or week
 ## How to use
-/**
-* @param context the context
-* @param isDaily true for today result, false for this week result
-* @return list of AppUsedTime
-*/
-AppUsage.queryUsageTime(context, isDaily)
+### Query for applications' time usage
+**AppUsage.queryUsageTime(context, isDaily)**
 
-/**
- * @property packageName the package name associated with this object
- * @property totalUsedTime the time that this application has used
- * @property timeStampStart the time stamp of this evaluation
- * @property isDaily is this evaluation daily or weekly. true for daily and otherwise
- */
-class AppUsedTime{
-  ...
-}
+   <sub>-context: the context</sub>
+   
+   <sub>-isDaily: true for today result, false for this week result</sub>
+
+
+### Return value
+**val appUsageStats: List\<AppUsedTime>**
+
+<sub>-packageName: the package name associated with this object</sub>
+
+<sub>-totalUsedTime: the time that this application has used</sub>
+
+<sub>-timeStampStart: the time stamp of this evaluation</sub>
+
+<sub>-isDaily: is this evaluation daily or weekly. true for daily and otherwise</sub>
+
+
+ 
+
