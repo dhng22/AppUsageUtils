@@ -8,7 +8,7 @@ AppUsage.queryUsageTime(context, isDaily)
    isDaily: true for today result, false for this week result
 
 
-#### Return value
+### Return value
 class AppUsedTime{
   ...
 }
