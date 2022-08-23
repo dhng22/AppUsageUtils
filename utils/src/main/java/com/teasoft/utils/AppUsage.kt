@@ -39,6 +39,27 @@ class AppUsage private constructor() {
                 return newApp
             }
 
+            // setting up calendar
+            setUpCalendar(startTime, endTime, isDaily)
+
+            // query usage list
+            val usageList =
+                usageStatsManager.queryEvents(startTime.timeInMillis, endTime.timeInMillis)
+            while (usageList.hasNextEvent()) {
+                val event = UsageEvents.Event()
+                usageList.getNextEvent(event)
+
+                val appUsedTime = getAppByPackageName(event.packageName)
+                when (event.eventType) {
+                    UsageEvents.Event.ACTIVITY_RESUMED -> appUsedTime.startUsingPoint(event.timeStamp)
+                    UsageEvents.Event.ACTIVITY_PAUSED -> appUsedTime.endUsingPoint(event.timeStamp)
+                }
+            }
+            return appList
+        }
+
+        // helper function
+        private fun setUpCalendar(startTime: Calendar, endTime: Calendar, isDaily: Boolean): Unit {
             when (isDaily) {
                 true -> {
                     startTime.set(Calendar.HOUR_OF_DAY, 0)
@@ -54,20 +75,6 @@ class AppUsage private constructor() {
                 }
             }
 
-            // main logic
-            val usageList =
-                usageStatsManager.queryEvents(startTime.timeInMillis, endTime.timeInMillis)
-            while (usageList.hasNextEvent()) {
-                val event = UsageEvents.Event()
-                usageList.getNextEvent(event)
-
-                val appUsedTime = getAppByPackageName(event.packageName)
-                when (event.eventType) {
-                    UsageEvents.Event.ACTIVITY_RESUMED -> appUsedTime.startUsingPoint(event.timeStamp)
-                    UsageEvents.Event.ACTIVITY_PAUSED -> appUsedTime.endUsingPoint(event.timeStamp)
-                }
-            }
-            return appList
         }
     }
 }
