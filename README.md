@@ -11,7 +11,9 @@ AppUsage.queryUsageTime(context, isDaily)
 
 ### Return value
 class AppUsedTime{
+
   ...
+  
 }
 
 packageName: the package name associated with this object
