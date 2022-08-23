@@ -10,11 +10,7 @@ Query and return application usage time by day or week
 
 
 ### Return value
-**class AppUsedTime{
-
-  ...
-  
-}**
+**val appUsageStats: List<AppUsedTime>**
 
 <sub>packageName: the package name associated with this object</sub>
 
