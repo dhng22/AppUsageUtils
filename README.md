@@ -4,7 +4,7 @@ Query and return application usage time by day or week
 ### Query for applications' time usage
 AppUsage.queryUsageTime(context, isDaily)
 
-   context: the context
+   <u>context: the context<u/>
    
    isDaily: true for today result, false for this week result
 
