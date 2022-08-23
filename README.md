@@ -6,6 +6,7 @@ Query and return application usage time by day or week
 * @param isDaily true for today result, false for this week result
 * @return list of AppUsedTime
 */
+
 AppUsage.queryUsageTime(context, isDaily)
 
 /**
@@ -14,6 +15,7 @@ AppUsage.queryUsageTime(context, isDaily)
  * @property timeStampStart the time stamp of this evaluation
  * @property isDaily is this evaluation daily or weekly. true for daily and otherwise
  */
+ 
 class AppUsedTime{
   ...
 }
