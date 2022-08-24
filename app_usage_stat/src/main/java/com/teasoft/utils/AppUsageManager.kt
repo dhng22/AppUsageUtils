@@ -26,7 +26,7 @@ class AppUsageManager private constructor() {
          *
          *  e.g: Samsung
          */
-        private val whiteListApp = arrayListOf<String>(
+        private val whiteListApp = arrayListOf(
             // facebook
             "com.facebook.katana",
             "com.google.android.youtube",
@@ -48,7 +48,7 @@ class AppUsageManager private constructor() {
         /**
          * Query for application time usage
          * @param isDaily true for daily time query, false for weekly
-         * @return list of application time usage
+         * @return list of `AppUsageStat`
          */
         fun queryAllAppUsageTime(context: Context, isDaily: Boolean): List<AppUsageStat> {
             // init
@@ -106,7 +106,7 @@ class AppUsageManager private constructor() {
 
         /**
          *  Query for top 5 most used application
-         *  @return list of application with associated information
+         *  @return list of `AppUsageStat`
          *
          * */
         fun getTopFiveMostUsedApp(): List<AppUsageStat> {
@@ -120,7 +120,8 @@ class AppUsageManager private constructor() {
 
         /**
          *  Query for a specific application time usage
-         *  @return a specific application with time usage
+         *  @param packageName the id of the `AppUsageStat` to retrieve
+         *  @return a specific `AppUsageStat`
          */
         fun getAppUsageStatById(packageName: String): AppUsageStat {
             val response = retrofit.getAppUsageById(packageName).execute()
