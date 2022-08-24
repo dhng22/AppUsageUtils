@@ -3,6 +3,9 @@ package com.teasoft.utils
 import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.util.Log
 import com.teasoft.common.Constants
 import com.teasoft.models.AppUsedTime
 import java.text.SimpleDateFormat
@@ -11,19 +14,28 @@ import kotlin.collections.ArrayList
 
 class AppUsage private constructor() {
     companion object {
+        private val whiteListApp= arrayListOf<String>("com.facebook.katana")
         /**
          * Query for application time usage
          * @param isDaily true for daily time query, false for weekly
          * @return list of application time usage
          */
         fun queryUsageTime(context: Context, isDaily: Boolean): List<AppUsedTime> {
-            // init app list and stat manager
+            // init
             val appList = ArrayList<AppUsedTime>()
             val usageStatsManager =
                 context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+            val packageManager = context.packageManager
             val startTime = Calendar.getInstance()
             val endTime = Calendar.getInstance()
 
+            //init system app list
+            val systemApplication =
+                packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+                    .filter {it.packageName.contains("android") ||((it.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP))!=0 )}.map { it.packageName }
+
+
+            Log.e("system app", "${systemApplication.toString()} ")
             // ignore helper function
             fun getAppByPackageName(packageName: String): AppUsedTime {
                 for (appUsedTime in appList) {
@@ -34,7 +46,8 @@ class AppUsage private constructor() {
                 val newApp = AppUsedTime()
                 newApp.packageName = packageName
                 newApp.isDaily = isDaily
-                newApp.timeStampStart = SimpleDateFormat(Constants.TIME_FORMAT).format(Date(startTime.timeInMillis))
+                newApp.timeStampStart =
+                    SimpleDateFormat(Constants.TIME_FORMAT).format(Date(startTime.timeInMillis))
                 appList.add(newApp)
                 return newApp
             }
@@ -49,6 +62,10 @@ class AppUsage private constructor() {
                 val event = UsageEvents.Event()
                 usageList.getNextEvent(event)
 
+                // ignore system application
+                if (systemApplication.contains(event.packageName)) {
+                    continue
+                }
                 val appUsedTime = getAppByPackageName(event.packageName)
                 when (event.eventType) {
                     UsageEvents.Event.ACTIVITY_RESUMED -> appUsedTime.startUsingPoint(event.timeStamp)
@@ -70,7 +87,7 @@ class AppUsage private constructor() {
                     startTime.set(Calendar.MINUTE, 0)
                     startTime.set(
                         Calendar.DAY_OF_WEEK,
-                        Calendar.getInstance(Locale("en","UK")).firstDayOfWeek
+                        Calendar.getInstance(Locale("en", "UK")).firstDayOfWeek
                     )
                 }
             }
