@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
-import com.teasoft.utils.AppUsage
+import com.teasoft.utils.AppUsageManager
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,11 +19,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        val appUsage = AppUsage.queryUsageTime(this, false)
+        val appUsageManager = AppUsageManager.queryAllAppUsageTime(this, false)
 
-        for (appUsedTime in appUsage) {
-            Log.e("TAG", "${appUsedTime.totalUsedTime/1000/60} minutes ${appUsedTime.packageName} from ${appUsedTime.timeStampStart}, isDaily:${appUsedTime.isDaily}")
+        for (appUsedTime in appUsageManager) {
+            Log.e(
+                "TAG",
+                "${appUsedTime.totalUsedTime / 1000 / 60} minutes ${appUsedTime.packageName} from ${appUsedTime.timeStampStart}, isDaily:${appUsedTime.isDaily}"
+            )
         }
     }
-
 }

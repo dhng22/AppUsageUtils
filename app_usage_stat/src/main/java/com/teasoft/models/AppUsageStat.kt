@@ -6,7 +6,7 @@ package com.teasoft.models
  * @property timeStampStart the time stamp of this evaluation
  * @property isDaily is this evaluation daily or weekly. true for daily and otherwise
  */
-class AppUsedTime {
+class AppUsageStat {
     private var startPoint: Long = 0
     var packageName: String? = null
     var totalUsedTime: Long = 0

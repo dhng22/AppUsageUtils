@@ -5,45 +5,62 @@ import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.util.Log
 import com.teasoft.common.Constants
-import com.teasoft.models.AppUsedTime
+import com.teasoft.data.remote.ApiRequest
+import com.teasoft.models.AppUsageStat
+import retrofit2.HttpException
+import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class AppUsage private constructor() {
+class AppUsageManager private constructor() {
     companion object {
-        private val whiteListApp= arrayListOf<String>("com.facebook.katana")
+        private val retrofit =
+            retrofit2.Retrofit.Builder().baseUrl(Constants.BASE_API_URL).addConverterFactory(
+                GsonConverterFactory.create()
+            ).build().create(ApiRequest::class.java)
+        private val whiteListApp = arrayListOf<String>(
+            "com.facebook.katana",
+            "com.google.android.youtube",
+            "com.whatsapp",
+            "com.facebook.orca",
+            "com.instagram.android",
+            "com.tencent.mm",
+            "com.linkedin.android",
+            "com.zhiliaoapp.musically",
+            "com.ss.android.ugc.aweme",
+            "com.sina.weibo"
+        )
+
         /**
          * Query for application time usage
          * @param isDaily true for daily time query, false for weekly
          * @return list of application time usage
          */
-        fun queryUsageTime(context: Context, isDaily: Boolean): List<AppUsedTime> {
+        fun queryAllAppUsageTime(context: Context, isDaily: Boolean): List<AppUsageStat> {
             // init
-            val appList = ArrayList<AppUsedTime>()
+            val appList = ArrayList<AppUsageStat>()
             val usageStatsManager =
                 context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
             val packageManager = context.packageManager
             val startTime = Calendar.getInstance()
             val endTime = Calendar.getInstance()
-
             //init system app list
             val systemApplication =
                 packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
-                    .filter {it.packageName.contains("android") ||((it.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP))!=0 )}.map { it.packageName }
+                    .filter { (it.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0 }
+                    .map { it.packageName }
+                    .filterNot { whiteListApp.contains(it) }
 
-
-            Log.e("system app", "${systemApplication.toString()} ")
             // ignore helper function
-            fun getAppByPackageName(packageName: String): AppUsedTime {
+            fun getAppByPackageName(packageName: String): AppUsageStat {
                 for (appUsedTime in appList) {
                     if (appUsedTime.packageName == packageName) {
                         return appUsedTime
                     }
                 }
-                val newApp = AppUsedTime()
+                val newApp = AppUsageStat()
                 newApp.packageName = packageName
                 newApp.isDaily = isDaily
                 newApp.timeStampStart =
@@ -51,9 +68,9 @@ class AppUsage private constructor() {
                 appList.add(newApp)
                 return newApp
             }
-
             // setting up calendar
             setUpCalendar(startTime, endTime, isDaily)
+
 
             // query usage list
             val usageList =
@@ -61,7 +78,6 @@ class AppUsage private constructor() {
             while (usageList.hasNextEvent()) {
                 val event = UsageEvents.Event()
                 usageList.getNextEvent(event)
-
                 // ignore system application
                 if (systemApplication.contains(event.packageName)) {
                     continue
@@ -73,6 +89,44 @@ class AppUsage private constructor() {
                 }
             }
             return appList
+        }
+
+
+        /**
+         *  Query for top 5 most used application
+         *  @return list of application with associated information
+         *
+         * */
+        fun getTopFiveMostUsedApp(): List<AppUsageStat> {
+            val response = retrofit.getTopFiveMostUsed().execute()
+            if (response.message() != "success") {
+                throw HttpException(response)
+            }
+            return response.body()!!
+
+        }
+
+        /**
+         *  Query for a specific application time usage
+         *  @return a specific application with time usage
+         */
+        fun getAppUsageStatById(packageName: String): AppUsageStat {
+            val response = retrofit.getAppUsageById(packageName).execute()
+            if (response.message() != "success") {
+                throw HttpException(response)
+            }
+            return response.body()!!
+        }
+
+        /**
+         *  Post data to the server
+         *  @param appUsageList the list that's supposed to be posted
+         */
+        fun postData(appUsageList: List<AppUsageStat>) {
+            val response = retrofit.postData(appUsageList).execute()
+            if (response.message() != "success") {
+                throw HttpException(response)
+            }
         }
 
         // helper function
