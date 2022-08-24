@@ -20,16 +20,28 @@ class AppUsageManager private constructor() {
             retrofit2.Retrofit.Builder().baseUrl(Constants.BASE_API_URL).addConverterFactory(
                 GsonConverterFactory.create()
             ).build().create(ApiRequest::class.java)
+
+        /**
+         *  WhitelistApp for filtering app that's considered exception on some devices with default installation
+         *
+         *  e.g: Samsung
+         */
         private val whiteListApp = arrayListOf<String>(
+            // facebook
             "com.facebook.katana",
             "com.google.android.youtube",
             "com.whatsapp",
+            // messenger
             "com.facebook.orca",
             "com.instagram.android",
+            // wechat
             "com.tencent.mm",
             "com.linkedin.android",
+            //tiktok
             "com.zhiliaoapp.musically",
+            // douyin
             "com.ss.android.ugc.aweme",
+            // weeboo
             "com.sina.weibo"
         )
 
