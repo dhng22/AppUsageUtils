@@ -19,12 +19,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        val appUsageManager = AppUsageManager.queryAllAppUsageTime(this, false)
+        val appUsageManager = AppUsageManager.queryAppUsageTime(this)
 
         for (appUsedTime in appUsageManager) {
             Log.e(
                 "TAG",
-                "${appUsedTime.totalUsedTime / 1000 / 60} minutes ${appUsedTime.packageName} from ${appUsedTime.timeStampStart}, isDaily:${appUsedTime.isDaily}"
+                "${appUsedTime.totalUsedTime / 1000 / 60} minutes ${appUsedTime.packageName} from ${appUsedTime.timeStamp}"
             )
         }
     }
