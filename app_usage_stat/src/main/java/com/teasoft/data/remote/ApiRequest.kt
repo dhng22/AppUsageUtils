@@ -1,19 +1,29 @@
 package com.teasoft.data.remote
 
-import com.teasoft.models.AppUsageStat
+import com.teasoft.data.remote.dto.AppUsageStatDto
+import com.teasoft.domain.models.AppUsageStat
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface ApiRequest {
-//    @GET("...")
-//    fun getTopFiveMostUsed(): Call<List<AppUsageStat>>
-//
-//    @GET("...")
-//    fun getAppUsageById(@Query("id") packageName: String): Call<AppUsageStat>
-//
-//    @POST("...")
-//    fun postData(@Body usageList: List<AppUsageStat>):Call<List<AppUsageStat>>
+    @GET("api/supervise/apps/mostused")
+    fun getTopFiveMostUsed(
+        @Header("auth-token") authToken: String,
+        @Query("id") id: String
+    ): Call<List<AppUsageStatDto>>
+
+    @GET("api/supervise/apps")
+    fun getAppUsageById(
+        @Header("auth-token") authToken: String,
+        @Query("id") id: String,
+        @Field("packageName") packageName: String,
+        @Field("idSupervisee") idSupervisee: String
+    ): Call<AppUsageStatDto>
+
+    @PUT("api/supervise/apps/update")
+    fun pushData(
+        @Header("auth-token") authToken: String,
+        @Query("id") id: String,
+        @Body usageList: List<List<AppUsageStat>>
+    ): Call<String>
 }

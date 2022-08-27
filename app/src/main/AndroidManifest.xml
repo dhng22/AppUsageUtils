@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.teasoft.appusageutils">
 
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
     <uses-permission tools:ignore="ProtectedPermissions" android:name="android.permission.PACKAGE_USAGE_STATS" />
     <application
         android:allowBackup="true"
